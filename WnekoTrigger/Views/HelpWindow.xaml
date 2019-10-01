@@ -1,0 +1,51 @@
+﻿<Window x:Class="WnekoTrigger.Views.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WnekoTrigger"
+        mc:Ignorable="d"
+        Title="WnękoTrigger Help" Height="500" Width="500"
+        x:Name="helpWindow"
+        WindowStyle="None"
+        ResizeMode="CanResize">
+    <Grid>
+        <DockPanel>
+
+            <Grid DockPanel.Dock="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="WnękoTrigger"
+                   HorizontalAlignment="Left"
+                   Grid.Column="0"/>
+                <StackPanel Orientation="Horizontal"
+                        Grid.Column="2">
+                    <Button x:Name="minimizeButton"
+                Content=" _ "
+                DockPanel.Dock="Top"
+                Width="30"
+                Height="30"
+                Click="MinimizeButton_Click"/>
+                    <Button x:Name="maximizeButton" 
+                Content=" O " 
+                DockPanel.Dock="Top" 
+                Width="30"
+                Height="30"
+                Click="MaximizeButton_Click"/>
+                    <Button x:Name="closeButton" 
+                Content=" X " 
+                DockPanel.Dock="Top" 
+                Width="30"
+                Height="30"
+                Click="CloseButton_Click"/>
+                </StackPanel>
+            </Grid>
+            <Grid>
+                
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>
