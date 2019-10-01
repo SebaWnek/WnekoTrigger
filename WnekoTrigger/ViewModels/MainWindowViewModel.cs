@@ -120,6 +120,7 @@ namespace WnekoTrigger.ViewModels
         public int IntervalCount { get => intervalCount; set => intervalCount = value; }
         public int Duration { get => duration; set => duration = value; }
         public int Delay { get => delay; set => delay = value; }
+        public ICommand OpenHelpCommand { get => openHelpCommand; set => openHelpCommand = value; }
 
         private void OnPropertyChanged([CallerMemberName] String propertyName = "")
         {
@@ -128,8 +129,8 @@ namespace WnekoTrigger.ViewModels
 
         public MainWindowViewModel()
         {
-            helpWindow = new HelpWindow();
-            openHelpCommand = new CommandHandler(OpenHelp, () => true);
+            
+            OpenHelpCommand = new CommandHandler(OpenHelp, (b) => true);
             deviceEnumerator = new MMDeviceEnumerator();
             Devices = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
             recorder = new WaveInEvent();
@@ -152,10 +153,14 @@ namespace WnekoTrigger.ViewModels
             }
         }
 
-        private void OpenHelp()
+        private void OpenHelp(object o)
         {
-            if (helpWindow.Visibility != Visibility.Visible)
-                helpWindow.Visibility = Visibility.Visible;
+            MessageBox.Show("Dupa");
+            if (helpWindow == null || helpWindow.IsLoaded == false)
+            {
+                helpWindow = new HelpWindow();
+                helpWindow.Show();
+            }
         }
     }
 }

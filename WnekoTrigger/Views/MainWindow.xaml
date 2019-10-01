@@ -252,7 +252,7 @@
                     Grid.Row="2"
                     Grid.Column="3"
                     Margin="40,10"
-                    Command="openHelpCommand"/>
+                    Command="{Binding OpenHelpCommand}"/>
         </Grid>
     </DockPanel>
 </Window>

@@ -30,7 +30,7 @@ namespace WnekoTrigger.Views
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Visibility = Visibility.Hidden;
+            this.Close();
         }
 
         private void MaximizeButton_Click(object sender, RoutedEventArgs e)

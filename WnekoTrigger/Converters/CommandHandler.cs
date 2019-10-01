@@ -9,10 +9,10 @@ namespace WnekoTrigger.Converters
 {
     class CommandHandler : ICommand
     {
-        private Action action;
-        private Func<bool> canExecute;
+        private Action<object> action;
+        private Func<object, bool> canExecute;
 
-        public CommandHandler(Action act, Func<bool> canExec)
+        public CommandHandler(Action<object> act, Func<object, bool> canExec)
         {
             action = act;
             canExecute = canExec;
@@ -22,12 +22,12 @@ namespace WnekoTrigger.Converters
 
         public bool CanExecute(object parameter)
         {
-            return canExecute();
+            return canExecute(parameter);
         }
 
         public void Execute(object parameter)
         {
-            action();
+            action(parameter);
         }
     }
 }
