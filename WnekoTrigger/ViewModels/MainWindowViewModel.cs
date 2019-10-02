@@ -14,10 +14,11 @@ using System.Windows.Input;
 using WnekoTrigger.Converters;
 using System.Windows;
 using WnekoTrigger.Views;
+using WnekoTrigger.Models;
 
 namespace WnekoTrigger.ViewModels
 {
-    class MainWindowViewModel : INotifyPropertyChanged
+    partial class MainWindowViewModel : INotifyPropertyChanged
     {
         private float volumeLevel;
         private Timer timer;
@@ -40,6 +41,12 @@ namespace WnekoTrigger.ViewModels
         private int delay = 0;
         private Window helpWindow;
         private ICommand openHelpCommand;
+        private ICommand startCommand;
+        private ICommand stopCommand;
+        private bool isStarted = false;
+        private List<Mode> modeList;
+        private Mode selectedMode;
+        private SoundTrigger trigger;
 
         public string Intervals { get => intervals; set => intervals = value; }
         public float VolumeLevel
@@ -121,6 +128,19 @@ namespace WnekoTrigger.ViewModels
         public int Duration { get => duration; set => duration = value; }
         public int Delay { get => delay; set => delay = value; }
         public ICommand OpenHelpCommand { get => openHelpCommand; set => openHelpCommand = value; }
+        public ICommand StartCommand { get => startCommand; set => startCommand = value; }
+        public ICommand StopCommand { get => stopCommand; set => stopCommand = value; }
+        public List<Mode> ModeList { get => modeList; set => modeList = value; }
+        public Mode SelectedMode { get => selectedMode; set => selectedMode = value; }
+        public bool IsStarted
+        {
+            get => isStarted;
+            set
+            {
+                isStarted = value;
+                
+            }
+        }
 
         private void OnPropertyChanged([CallerMemberName] String propertyName = "")
         {
@@ -129,8 +149,12 @@ namespace WnekoTrigger.ViewModels
 
         public MainWindowViewModel()
         {
-            
+            trigger = new SoundTrigger();
+            modeList = Modes.modes;
+            selectedMode = modeList[0];
             OpenHelpCommand = new CommandHandler(OpenHelp, (b) => true);
+            StartCommand = new CommandHandler(Start, StartEnabled);
+            StopCommand = new CommandHandler(Stop, StopEnabled);
             deviceEnumerator = new MMDeviceEnumerator();
             Devices = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
             recorder = new WaveInEvent();
@@ -153,14 +177,8 @@ namespace WnekoTrigger.ViewModels
             }
         }
 
-        private void OpenHelp(object o)
-        {
-            MessageBox.Show("Dupa");
-            if (helpWindow == null || helpWindow.IsLoaded == false)
-            {
-                helpWindow = new HelpWindow();
-                helpWindow.Show();
-            }
-        }
+
+
+
     }
 }

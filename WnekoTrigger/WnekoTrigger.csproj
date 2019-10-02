@@ -60,7 +60,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\CommandHandler.cs" />
+    <Compile Include="Models\Modes.cs" />
     <Compile Include="Models\SoundTrigger.cs" />
+    <Compile Include="ViewModels\Commands.cs" />
     <Compile Include="ViewModels\HelpWindowViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Page Include="Views\HelpWindow.xaml">

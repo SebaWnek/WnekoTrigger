@@ -101,13 +101,8 @@
                   Padding="5"
                   Header="Mode:">
                 <StackPanel >
-                    <ListBox>
-                        <ListBoxItem Content="Single shot"
-                             IsSelected="True"/>
-                        <ListBoxItem Content="Multiple shots"/>
-                        <ListBoxItem Content="Same interval series"/>
-                        <ListBoxItem Content="Different interval series"/>
-                    </ListBox>
+                    <ListBox ItemsSource="{Binding ModeList}"
+                             SelectedItem="{Binding SelectedMode}"/>
                 </StackPanel>
             </GroupBox>
 
@@ -247,6 +242,18 @@
                     </GroupBox>
                 </StackPanel>
             </GroupBox>
+            <Button x:Name="startButton"
+                    Content="Start"
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Margin="40,10"
+                    Command="{Binding StartCommand}"/>
+            <Button x:Name="stopButton"
+                    Content="Stop"
+                    Grid.Row="2"
+                    Grid.Column="2"
+                    Margin="40,10"
+                    Command="{Binding StopCommand}"/>
             <Button x:Name="helpButton"
                     Content="Help"
                     Grid.Row="2"
