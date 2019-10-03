@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using WnekoTrigger.Converters;
 using WnekoTrigger.Views;
@@ -23,7 +24,7 @@ namespace WnekoTrigger.ViewModels
 
         private void Start(object o)
         {
-            IsStarted = true;
+            IsNotStarted = false;
             StopCommand.RaiseCanExecuteChanged();
             StartCommand.RaiseCanExecuteChanged();
             trigger.InputDevice = selectedRecordDevice;
@@ -33,7 +34,7 @@ namespace WnekoTrigger.ViewModels
 
         private void Stop(object o)
         {
-            IsStarted = false;
+            IsNotStarted = true;
             StartCommand.RaiseCanExecuteChanged();
             StopCommand.RaiseCanExecuteChanged();
             MessageBox.Show("Stop dupa");
@@ -46,7 +47,8 @@ namespace WnekoTrigger.ViewModels
         
         private bool StartEnabled(object o)
         {
-            return !IsStarted;
+            bool error = Validation.GetHasError(main.intervalsBox);
+            return !IsStarted && !error;
         }
     }
 }

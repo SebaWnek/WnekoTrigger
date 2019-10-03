@@ -63,7 +63,8 @@
 
             <GroupBox Grid.Row="0"
                   Grid.RowSpan="3"
-                  Header="Audo level:">
+                  Header="Audo level:"
+                  IsEnabled="{Binding IsNotStarted}">
                 <Grid>
                     <StackPanel x:Name="barsContainer"
                         Orientation="Horizontal"
@@ -99,7 +100,8 @@
             <GroupBox Grid.Row="0" 
                   Grid.Column="1"
                   Padding="5"
-                  Header="Mode:">
+                  Header="Mode:"
+                  IsEnabled="{Binding IsNotStarted}">
                 <StackPanel >
                     <ListBox ItemsSource="{Binding ModeList}"
                              SelectedItem="{Binding SelectedMode}"/>
@@ -109,7 +111,8 @@
             <GroupBox Grid.Row="0" 
                   Grid.RowSpan="2"
                   Grid.Column="2"
-                  Header="Mode settings:">
+                  Header="Mode settings:"
+                  IsEnabled="{Binding IsNotStarted}">
                 <StackPanel >
 
                     <StackPanel Margin="5">
@@ -168,7 +171,9 @@
                                      TextWrapping="Wrap"
                                      Height="90"
                                      MaxHeight="90">
-                                    <Binding Path="Intervals" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding Path="Intervals" 
+                                             UpdateSourceTrigger="PropertyChanged"
+                                             NotifyOnValidationError="True">
                                         <Binding.ValidationRules>
                                             <local:IntervalValidationRule ValidationStep="RawProposedValue"/>
                                         </Binding.ValidationRules>
@@ -185,7 +190,8 @@
                   Grid.RowSpan="2"
                   Grid.Column="3"
                   Padding="10"
-                  Header="General settings:">
+                  Header="General settings:"
+                  IsEnabled="{Binding IsNotStarted}">
                 <StackPanel>
                     <GroupBox Header="Recording device:">
                         <ComboBox x:Name="recordDeviceListBox"
@@ -242,18 +248,21 @@
                     </GroupBox>
                 </StackPanel>
             </GroupBox>
+            
             <Button x:Name="startButton"
                     Content="Start"
                     Grid.Row="2"
                     Grid.Column="1"
                     Margin="40,10"
                     Command="{Binding StartCommand}"/>
+            
             <Button x:Name="stopButton"
                     Content="Stop"
                     Grid.Row="2"
                     Grid.Column="2"
                     Margin="40,10"
                     Command="{Binding StopCommand}"/>
+            
             <Button x:Name="helpButton"
                     Content="Help"
                     Grid.Row="2"

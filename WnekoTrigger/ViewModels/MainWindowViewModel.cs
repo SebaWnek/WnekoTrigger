@@ -141,6 +141,15 @@ namespace WnekoTrigger.ViewModels
                 OnPropertyChanged();
             }
         }
+        public bool IsNotStarted
+        {
+            get => !isStarted;
+            set
+            {
+                isStarted = !value;
+                OnPropertyChanged();
+            }
+        }
 
         private void OnPropertyChanged([CallerMemberName] String propertyName = "")
         {
