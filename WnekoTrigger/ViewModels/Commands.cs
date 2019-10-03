@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using WnekoTrigger.Converters;
 using WnekoTrigger.Views;
 
 namespace WnekoTrigger.ViewModels
@@ -23,6 +24,8 @@ namespace WnekoTrigger.ViewModels
         private void Start(object o)
         {
             IsStarted = true;
+            StopCommand.RaiseCanExecuteChanged();
+            StartCommand.RaiseCanExecuteChanged();
             trigger.InputDevice = selectedRecordDevice;
             trigger.OutputDevide = selectedPlayDevice;
             MessageBox.Show("Dupa");
@@ -31,6 +34,9 @@ namespace WnekoTrigger.ViewModels
         private void Stop(object o)
         {
             IsStarted = false;
+            StartCommand.RaiseCanExecuteChanged();
+            StopCommand.RaiseCanExecuteChanged();
+            MessageBox.Show("Stop dupa");
         }
 
         private bool StopEnabled(object o)

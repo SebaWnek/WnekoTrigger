@@ -31,5 +31,16 @@ namespace WnekoTrigger.Converters
         {
             action(parameter);
         }
+
+        private void OnCanExecuteChanged()
+        {
+            var handler = CanExecuteChanged;
+            handler.Invoke(this, EventArgs.Empty);
+        }
+
+        public void RaiseCanExecuteChanged()
+        {
+            OnCanExecuteChanged();
+        }
     }
 }

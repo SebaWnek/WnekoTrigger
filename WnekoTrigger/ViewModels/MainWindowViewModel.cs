@@ -40,9 +40,9 @@ namespace WnekoTrigger.ViewModels
         private int duration = 20;
         private int delay = 0;
         private Window helpWindow;
-        private ICommand openHelpCommand;
-        private ICommand startCommand;
-        private ICommand stopCommand;
+        private CommandHandler openHelpCommand;
+        private CommandHandler startCommand;
+        private CommandHandler stopCommand;
         private bool isStarted = false;
         private List<Mode> modeList;
         private Mode selectedMode;
@@ -127,9 +127,9 @@ namespace WnekoTrigger.ViewModels
         public int IntervalCount { get => intervalCount; set => intervalCount = value; }
         public int Duration { get => duration; set => duration = value; }
         public int Delay { get => delay; set => delay = value; }
-        public ICommand OpenHelpCommand { get => openHelpCommand; set => openHelpCommand = value; }
-        public ICommand StartCommand { get => startCommand; set => startCommand = value; }
-        public ICommand StopCommand { get => stopCommand; set => stopCommand = value; }
+        public CommandHandler OpenHelpCommand { get => openHelpCommand; set => openHelpCommand = value; }
+        public CommandHandler StartCommand { get => startCommand; set => startCommand = value; }
+        public CommandHandler StopCommand { get => stopCommand; set => stopCommand = value; }
         public List<Mode> ModeList { get => modeList; set => modeList = value; }
         public Mode SelectedMode { get => selectedMode; set => selectedMode = value; }
         public bool IsStarted
@@ -138,12 +138,13 @@ namespace WnekoTrigger.ViewModels
             set
             {
                 isStarted = value;
-                
+                OnPropertyChanged();
             }
         }
 
         private void OnPropertyChanged([CallerMemberName] String propertyName = "")
         {
+            CommandManager.InvalidateRequerySuggested();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
