@@ -35,7 +35,13 @@ namespace WnekoTrigger.Converters
         private void OnCanExecuteChanged()
         {
             var handler = CanExecuteChanged;
-            handler.Invoke(this, EventArgs.Empty);
+            try
+            {
+                handler.Invoke(this, EventArgs.Empty);
+            }
+            catch (NullReferenceException)
+            {
+            }
         }
 
         public void RaiseCanExecuteChanged()

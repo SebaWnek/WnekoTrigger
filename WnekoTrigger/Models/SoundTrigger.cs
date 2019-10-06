@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace WnekoTrigger.Models
 {
@@ -13,6 +15,9 @@ namespace WnekoTrigger.Models
     {
         SignalGenerator signal;
         WaveOutEvent wo;
+        private delegate Task Function();
+        Function choosenMethod;
+        CancellationToken cancellationToken;
 
         Mode triggerMode;
         MMDevice inputDevice;
@@ -25,6 +30,9 @@ namespace WnekoTrigger.Models
         int[] intervalsArray;
         int duration;
         int delay;
+        double treshold;
+
+        float readVolume;
 
         public SoundTrigger() : this(null, null)
         {
@@ -49,19 +57,46 @@ namespace WnekoTrigger.Models
             wo.Pause();
         }
 
-        public void SetUpTrigger(Mode mode, MMDevice input, MMDevice output, int minInter, int sameInter, bool intCountEnabled, int intCount, string inters, int dur, int del)
+        public void SetUpTrigger(Mode mode, MMDevice input, MMDevice output, double tresh, int minInter, int sameInter, bool intCountEnabled, int intCount, string inters, int dur, int del, CancellationToken token)
         {
             triggerMode = mode;
             inputDevice = input;
             outputDevice = output;
+            treshold = tresh;
             minimalInterval = minInter;
             sameInterval = sameInter;
             intervalCountEnabled = intCountEnabled;
-            intervalCount = intCount;
+            if (intervalCountEnabled)
+            {
+                intervalCount = intCount;
+            }
+            else intervalCount = int.MaxValue;
             intervals = inters;
             duration = dur;
             delay = del;
+            cancellationToken = token;
             intervalsArray = ReadIntervals(intervals);
+
+            ChoosMethod();
+        }
+
+        private void ChoosMethod()
+        {
+            switch (triggerMode.Type)
+            {
+                case ModeTypes.SingleShot:
+                    choosenMethod = SingleShot;
+                    break;
+                case ModeTypes.MultipleShot:
+                    choosenMethod = MultiShot;
+                    break;
+                case ModeTypes.SameInterval:
+                    choosenMethod = SameInterval;
+                    break;
+                case ModeTypes.MultipleInterval:
+                    choosenMethod = MultiIntervals;
+                    break;
+            }
         }
 
         private int[] ReadIntervals(string intervals)
@@ -73,6 +108,67 @@ namespace WnekoTrigger.Models
                 tmp.Add(int.Parse(s));
             }
             return tmp.ToArray();
+        }
+
+        public async Task StartTrigger()
+        {
+            await Task.Delay(delay);
+            await choosenMethod();
+        }
+
+        private async Task SingleShot()
+        {
+            await Task.Run(() =>
+            {
+                while (true)
+                {
+                    if (cancellationToken.IsCancellationRequested == true) return;
+                    readVolume = inputDevice.AudioMeterInformation.MasterPeakValue;
+                    if (readVolume >= treshold)
+                    {
+                        PlayAsync();
+                        return;
+                    }
+                }
+            });
+        }
+
+        private async Task MultiShot()
+        {
+            await Task.Run(() =>
+            {
+                while (true)
+                {
+                    if (cancellationToken.IsCancellationRequested == true) return;
+                    readVolume = inputDevice.AudioMeterInformation.MasterPeakValue;
+                    if (readVolume >= treshold)
+                    {
+                        PlayAsync();
+                        Task.Delay(delay);
+                    }
+                }
+            });
+        }
+
+        private async Task SameInterval()
+        {
+            for (int i = 0; i < intervalCount; i++)
+            {
+                if (cancellationToken.IsCancellationRequested == true) return;
+                PlayAsync();
+                await Task.Delay(sameInterval);
+            }
+        }
+
+        private async Task MultiIntervals()
+        {
+            await PlayAsync();
+            foreach (int delay in intervalsArray)
+            {
+                if (cancellationToken.IsCancellationRequested == true) return;
+                await Task.Delay(delay);
+                PlayAsync();
+            }
         }
     }
 }

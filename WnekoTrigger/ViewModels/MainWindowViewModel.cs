@@ -24,6 +24,8 @@ namespace WnekoTrigger.ViewModels
         private Timer timer;
         private MMDevice selectedRecordDevice;
         private MMDevice selectedPlayDevice;
+        private MMDevice defaultOutput;
+        private MMDevice defaultInput;
         private MMDeviceEnumerator deviceEnumerator;
         private MMDeviceCollection devices;
         public event PropertyChangedEventHandler PropertyChanged;
@@ -43,6 +45,8 @@ namespace WnekoTrigger.ViewModels
         private CommandHandler openHelpCommand;
         private CommandHandler startCommand;
         private CommandHandler stopCommand;
+        private CommandHandler setMaxVolume;
+        private CommandHandler refreshCommand;
         private bool isStarted = false;
         private List<Mode> modeList;
         private Mode selectedMode;
@@ -59,6 +63,15 @@ namespace WnekoTrigger.ViewModels
             }
         }
 
+        internal void SetDefaults()
+        {
+            int inputNumber = Devices.ToList().FindIndex((s) => s.ID == defaultInput.ID);
+            int outputNumber = Devices.ToList().FindIndex((s) => s.ID == defaultOutput.ID);
+            main.recordDeviceListBox.SelectedIndex = inputNumber;
+            main.playDeviceListBox.SelectedIndex = outputNumber;
+            SetMaxVolume.RaiseCanExecuteChanged();
+        }
+
         public MMDeviceCollection Devices
         {
             get => devices;
@@ -68,7 +81,7 @@ namespace WnekoTrigger.ViewModels
                 OnPropertyChanged();
             }
         }
-
+    
         public MMDevice SelectedRecordDevice
         {
             get => selectedRecordDevice;
@@ -97,6 +110,7 @@ namespace WnekoTrigger.ViewModels
             {
                 selectedPlayDevice = value;
                 OnPropertyChanged();
+                SetMaxVolume.RaiseCanExecuteChanged();
             }
         }
 
@@ -130,6 +144,8 @@ namespace WnekoTrigger.ViewModels
         public CommandHandler OpenHelpCommand { get => openHelpCommand; set => openHelpCommand = value; }
         public CommandHandler StartCommand { get => startCommand; set => startCommand = value; }
         public CommandHandler StopCommand { get => stopCommand; set => stopCommand = value; }
+        public CommandHandler SetMaxVolume { get => setMaxVolume; set => setMaxVolume = value; }
+        public CommandHandler RefreshCommand { get => refreshCommand; set => refreshCommand = value; }
         public List<Mode> ModeList { get => modeList; set => modeList = value; }
         public Mode SelectedMode { get => selectedMode; set => selectedMode = value; }
         public bool IsStarted
@@ -151,6 +167,7 @@ namespace WnekoTrigger.ViewModels
             }
         }
 
+
         private void OnPropertyChanged([CallerMemberName] String propertyName = "")
         {
             CommandManager.InvalidateRequerySuggested();
@@ -160,16 +177,17 @@ namespace WnekoTrigger.ViewModels
         public MainWindowViewModel()
         {
             trigger = new SoundTrigger();
-            modeList = Modes.modes;
-            selectedMode = modeList[0];
             OpenHelpCommand = new CommandHandler(OpenHelp, (b) => true);
             StartCommand = new CommandHandler(Start, StartEnabled);
             StopCommand = new CommandHandler(Stop, StopEnabled);
-            deviceEnumerator = new MMDeviceEnumerator();
-            Devices = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+            SetMaxVolume = new CommandHandler(MaxVolume, MaxVolumeEnabled);
+            RefreshCommand = new CommandHandler(Refresh, (o) => true);
+            modeList = Modes.modes;
+            selectedMode = modeList[0];
+            Refresh(null);
             recorder = new WaveInEvent();
             timer = new Timer();
-            timer.Interval = 1000/30;
+            timer.Interval = 1000 / 30;
             timer.AutoReset = true;
             timer.Elapsed += Timer_Elapsed;
         }
@@ -187,8 +205,16 @@ namespace WnekoTrigger.ViewModels
             }
         }
 
-
-
-
+        private void Refresh(object o)
+        {
+            deviceEnumerator = new MMDeviceEnumerator();
+            Devices = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+            defaultOutput = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            defaultInput = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
+            if (main.IsInitialized)
+            {
+                SetDefaults();
+            }
+        }
     }
 }

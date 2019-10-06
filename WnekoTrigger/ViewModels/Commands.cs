@@ -1,7 +1,9 @@
-﻿using System;
+﻿using NAudio.CoreAudioApi;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,6 +15,8 @@ namespace WnekoTrigger.ViewModels
 {
     partial class MainWindowViewModel
     {
+        CancellationTokenSource token = new CancellationTokenSource();
+
         private void OpenHelp(object o)
         {
             if (helpWindow == null || helpWindow.IsLoaded == false)
@@ -22,14 +26,23 @@ namespace WnekoTrigger.ViewModels
             }
         }
 
-        private void Start(object o)
+        private async void Start(object o)
         {
             IsNotStarted = false;
             StopCommand.RaiseCanExecuteChanged();
             StartCommand.RaiseCanExecuteChanged();
             trigger.InputDevice = selectedRecordDevice;
             trigger.OutputDevide = selectedPlayDevice;
-            MessageBox.Show("Dupa");
+            trigger.SetUpTrigger(selectedMode, selectedRecordDevice, selectedPlayDevice, treshold, minimalInterval, sameInterval, intervalCountEnabled, intervalCount, intervals, duration, delay, token.Token);
+            try
+            {
+                await trigger.StartTrigger();
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            Stop(null);
+            //MessageBox.Show("Dupa");
         }
 
         private void Stop(object o)
@@ -37,7 +50,10 @@ namespace WnekoTrigger.ViewModels
             IsNotStarted = true;
             StartCommand.RaiseCanExecuteChanged();
             StopCommand.RaiseCanExecuteChanged();
-            MessageBox.Show("Stop dupa");
+            token.Cancel();
+            token.Dispose();
+            token = new CancellationTokenSource();
+            //MessageBox.Show("Stop dupa");
         }
 
         private bool StopEnabled(object o)
@@ -49,6 +65,22 @@ namespace WnekoTrigger.ViewModels
         {
             bool error = Validation.GetHasError(main.intervalsBox);
             return !IsStarted && !error;
+        }
+
+        private void MaxVolume(object o)
+        {
+            var device = o as MMDevice;
+            if (device != null)
+            {
+                device.AudioEndpointVolume.MasterVolumeLevel = 0;
+            }
+        }
+
+        private bool MaxVolumeEnabled(object o)
+        {
+            var device = o as MMDevice;
+            if (device == null) return false;
+            return true;
         }
     }
 }

@@ -81,7 +81,8 @@
                         HorizontalAlignment="Center"
                         Margin="20,0,20,0"
                         Maximum="{Binding ElementName=levelBar, Path=ActualHeight}"
-                        Value="{Binding Path=Treshold}"/>
+                        Value="{Binding Path=Treshold, Mode=TwoWay, 
+                            UpdateSourceTrigger=PropertyChanged}"/>
 
                     </StackPanel>
                     <Border Margin="{Binding ElementName=barsContainer, Path=Margin}">
@@ -129,7 +130,7 @@
                                     <Label Content="ms"/>
                                 </StackPanel>
                                 <Slider x:Name="multiIntervalSlider"
-                                        Maximum="200"
+                                        Maximum="1000"
                                         Margin="0,5,0,0"
                                         Value="{Binding MinimalInterval,
                                         Mode=TwoWay}"
@@ -139,7 +140,7 @@
                         </GroupBox>
                         <GroupBox Header="Same interval:" Padding="0,5,0,5">
                             <StackPanel>
-                                <StackPanel Orientation="Horizontal"                                >
+                                <StackPanel Orientation="Horizontal">
                                     <TextBox x:Name="sameIntervalBox"
                              Width="50"
                              HorizontalAlignment="Left"                             
@@ -193,21 +194,31 @@
                   Header="General settings:"
                   IsEnabled="{Binding IsNotStarted}">
                 <StackPanel>
-                    <GroupBox Header="Recording device:">
-                        <ComboBox x:Name="recordDeviceListBox"
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right"
+                            Content="R"
+                                Width="30"
+                                Height="30"
+                                Margin="10,0,0,0"
+                                Command="{Binding RefreshCommand}"/>
+                        <StackPanel>
+                            <GroupBox Header="Recording device:">
+                                <ComboBox x:Name="recordDeviceListBox"
                              ItemsSource="{Binding Path=Devices}"
                              SelectedItem="{Binding Path=SelectedRecordDevice, Mode=TwoWay}">
-                        </ComboBox>
-                    </GroupBox>
-                    <GroupBox Header="Playback device:">
-                        <ComboBox x:Name="playDeviceListBox"
+                                </ComboBox>
+                            </GroupBox>
+                            <GroupBox Header="Playback device:">
+                                <ComboBox x:Name="playDeviceListBox"
                              ItemsSource="{Binding Path=Devices}"
                              SelectedItem="{Binding Path=SelectedPlayDevice, Mode=TwoWay}">
-                        </ComboBox>
-                    </GroupBox>
+                                </ComboBox>
+                            </GroupBox>
+                        </StackPanel>
+                    </DockPanel>
                     <GroupBox Header="Signal duration:" Padding="0,5,0,5">
                         <StackPanel>
-                            <StackPanel Orientation="Horizontal"                                >
+                            <StackPanel Orientation="Horizontal">
                                 <TextBox x:Name="durationBox"
                              Width="50"
                              HorizontalAlignment="Left"                             
@@ -239,30 +250,61 @@
                                 <Label Content="ms"/>
                             </StackPanel>
                             <Slider x:Name="delaySlider"
-                            Maximum="200"
+                            Maximum="5000"
                             Margin="0,5,0,0"
                             Value="{Binding Delay, Mode=TwoWay}"
                             TickFrequency="1"
                             IsSnapToTickEnabled="True"/>
                         </StackPanel>
                     </GroupBox>
+                    <GroupBox Header="Set system volume to maximum" Padding="0,5,0,5">
+                        <Button x:Name="volumeButton"
+                                Content="SetMaxVolume"
+                                Grid.Row="2"
+                                Grid.Column="2"
+                                Margin="20,5"
+                                Command="{Binding SetMaxVolume}"
+                                CommandParameter="{Binding ElementName=playDeviceListBox, 
+                                                   Path=SelectedItem}"/>
+                    </GroupBox>
                 </StackPanel>
             </GroupBox>
-            
+
             <Button x:Name="startButton"
                     Content="Start"
                     Grid.Row="2"
                     Grid.Column="1"
                     Margin="40,10"
-                    Command="{Binding StartCommand}"/>
-            
+                    Command="{Binding StartCommand}">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition 
+                                        Binding="{Binding ElementName=intervalsBox, 
+                                        Path=(Validation.HasError)}"
+                                        Value="True"/>
+                                    <!--<Condition 
+                                        Binding="{Binding ElementName=recordDeviceListBox,
+                                        Path=SelectedItem}"
+                                        Value="{x:Null}"/>-->
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="IsEnabled"
+                                        Value="False"/>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
             <Button x:Name="stopButton"
                     Content="Stop"
                     Grid.Row="2"
                     Grid.Column="2"
                     Margin="40,10"
                     Command="{Binding StopCommand}"/>
-            
+
             <Button x:Name="helpButton"
                     Content="Help"
                     Grid.Row="2"

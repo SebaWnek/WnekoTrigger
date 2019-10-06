@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WnekoTrigger.ViewModels;
 
 namespace WnekoTrigger
 {
@@ -20,10 +21,11 @@ namespace WnekoTrigger
     /// </summary>
     public partial class MainWindow : Window
     {
+        MainWindowViewModel viewModel;
         public MainWindow()
         {
             Thread.Sleep(2000);
-            var viewModel = new ViewModels.MainWindowViewModel();
+            viewModel = new MainWindowViewModel();
             DataContext = viewModel;
             InitializeComponent();
         }
@@ -58,6 +60,13 @@ namespace WnekoTrigger
 
             // Begin dragging the window
             this.DragMove();
+        }
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+            viewModel.SetDefaults();
+            viewModel.SetMaxVolume.RaiseCanExecuteChanged();
         }
     }
 }
