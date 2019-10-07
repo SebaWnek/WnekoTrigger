@@ -117,5 +117,8 @@
   <ItemGroup>
     <SplashScreen Include="Views\SplashScreen.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\shot.wav" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

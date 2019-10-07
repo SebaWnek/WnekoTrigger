@@ -32,6 +32,8 @@ namespace WnekoTrigger.Models
         int delay;
         double treshold;
 
+        System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"C:\Users\wneko\Source\Repos\SebaWnek\WnekoTrigger\WnekoTrigger\Resources\shot.wav");
+
         float readVolume;
 
         public SoundTrigger() : this(null, null)
@@ -41,7 +43,7 @@ namespace WnekoTrigger.Models
         {
             InputDevice = inputDev;
             OutputDevide = outputDev;
-            signal = new SignalGenerator() { Gain = 1, Frequency = 500, Type = SignalGeneratorType.Sin };
+            signal = new SignalGenerator() { Gain = 1, Frequency = 500, Type = SignalGeneratorType.Pink };
             //for now will always play on default device, going to change this later to play on outputDevice
             wo = new WaveOutEvent();
             wo.Init(signal);
@@ -52,9 +54,12 @@ namespace WnekoTrigger.Models
 
         private async Task PlayAsync()
         {
-            wo.Play();
+            //wo.Play();
+            //await Task.Delay(duration);
+            //wo.Pause();
+            player.Play();
+
             await Task.Delay(duration);
-            wo.Pause();
         }
 
         public void SetUpTrigger(Mode mode, MMDevice input, MMDevice output, double tresh, int minInter, int sameInter, bool intCountEnabled, int intCount, string inters, int dur, int del, CancellationToken token)
@@ -112,7 +117,6 @@ namespace WnekoTrigger.Models
 
         public async Task StartTrigger()
         {
-            await Task.Delay(delay);
             await choosenMethod();
         }
 
@@ -126,6 +130,7 @@ namespace WnekoTrigger.Models
                     readVolume = inputDevice.AudioMeterInformation.MasterPeakValue;
                     if (readVolume >= treshold)
                     {
+                        Thread.Sleep(delay);
                         PlayAsync();
                         return;
                     }
@@ -143,8 +148,9 @@ namespace WnekoTrigger.Models
                     readVolume = inputDevice.AudioMeterInformation.MasterPeakValue;
                     if (readVolume >= treshold)
                     {
+                        Thread.Sleep(delay);
                         PlayAsync();
-                        Task.Delay(delay);
+                        Thread.Sleep(minimalInterval);
                     }
                 }
             });
